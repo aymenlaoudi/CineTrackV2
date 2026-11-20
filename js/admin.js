@@ -37,8 +37,8 @@ function showForm(movie = null) {
     <input id="f_image" class="w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Image URL"
         value="${isEdit ? movie.image : ''}">
     <select id="f_type" class="w-full p-2 mb-4 bg-[#2b2b34] rounded">
-        <option value="Movies">Movies</option>
-        <option value="Series">Series</option>
+        <option value="${isEdit ? movie.type : 'Movies'}">Movies</option>
+        <option value="${isEdit ? movie.type : 'Series'}">Series</option>
     </select>
     </div>
     <div class = "grid grid-cols-2 gap-4 mb-4">
@@ -86,11 +86,13 @@ function showForm(movie = null) {
 
 function showDelete(movie) {
     content.innerHTML = `
+        <div class="grid grid-rows-3">
         <h2 class="text-2xl font-bold mb-4">Delete</h2>
         <p class="mb-6">Do you want to delete <b>${movie.title}</b> ?</p>
         <div class="flex gap-2">
             <button id="d_yes" class="px-4 py-2 bg-red-500 rounded">Yes, delete</button>
             <button id="d_no" class="px-4 py-2 bg-gray-700 rounded">Cancel</button>
+        </div>
         </div>
     `
     document.querySelector('#d_no').addEventListener('click', closeModal)
@@ -163,3 +165,17 @@ function renderMovies() {
         liste.append(tr)
     });
 }
+
+const search = document.querySelector('#search_admin')
+const filter = document.querySelector('#filter_admin')
+
+function searchAdmin() {
+    const shows = search.value.toLowerCase().trim()
+    let searchShow = movies.filter(show => show.title.toLowerCase().startsWith(shows))
+    renderMovies(searchShow)
+}
+renderMovies(searchShow)
+search.addEventListener('input',() => {
+    const s = searchAdmin()
+    console.log(s);
+})
