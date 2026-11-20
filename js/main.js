@@ -1,4 +1,4 @@
-import { fetchData, getComments, createComment } from "./api.js";
+import { fetchData } from "./api.js";
 import { showFavourite, isFav, togFavorite} from "./favourites.js";
 const data = await fetchData('https://raw.githubusercontent.com/ouchad97/cinetrack-api/main/cinetrack-data.json')
 console.log(data);
@@ -8,6 +8,7 @@ const test = document.querySelector('#test')
 
 let showsPerPage = 8 ;
 let currentPage = 1 ;
+let currentdata = data
 
 function showMovies(data) {
     test.innerHTML = ""
@@ -24,8 +25,12 @@ function showMovies(data) {
     Movies.forEach(movie =>{
         let id = movie.id
         let title = movie.title
+        let type = movie.type
         let releaseYear = movie.releaseYear
+        let duration = movie.duration
         let image = movie.image
+        let genres = movie.genres
+        let directors = movie.directors
 
         const card = document.createElement('div')
         card.classList = "bg-[#00002B] p-4 rounded-2xl hover:scale-97 transition duration-100 cursor-pointer"
@@ -94,16 +99,16 @@ btns.forEach(function (btn,index) {
 
 const cards = document.querySelector('#test')
 const modal = document.querySelector('#modal-card')
+const p = document.querySelector('modal_parent')
 const content = document.querySelector('#content-modal')
-cards.addEventListener('click', async (e) => {
+cards.addEventListener('click', (e) => {
     const card = e.target.closest('[id^="card_"]')
     if(!card) return
 
     const id = card.id.replace('card_','')
     const movie = data.find(m => m.id == id)
-    if(!movie) return
+    console.log(movie)
     const duration = (movie.type === "movie") ? `${movie.duration} min` : `${movie.seasons.length} seasons`;
-    const pseudoSaved = localStorage.getItem('pseudo') || ''
     content.innerHTML = `
     <button class="close-modal absolute top-2 right-4 text-2xl">X</button>
     <div class="grid grid-cols-2 gap-4">
@@ -117,75 +122,19 @@ cards.addEventListener('click', async (e) => {
     <span class="text-l font-semibold">Duration : ${duration}</span>
     <span class="text-l font-semibold">Description : ${movie.description}</span>
     <span class="text-l font-semibold">Genres : ${movie.genres}</span>
+    <p>Nom d'utilisateur :</p>
+    <input name="nom" class="w-full bg-white text-gray-500"></input>
+    <p>Entre Your Comment :</p>
+    <textarea class="w-full bg-white text-gray-500"></textarea>
     </div>
     </div>
-    <hr class="my-4">
-    <h3 class="text-xl font-bold mb-2">Comments</h3>
-    <div id="comments">Chargement...</div>
-
-    <input id="c_author" class="w-full bg-white text-gray-800 p-2 rounded mt-2 text-black"
-        placeholder="Your name" value="${pseudoSaved}">
-    <textarea id="c_text" class="w-full bg-white text-gray-800 p-2 rounded mt-2 text-black"
-        placeholder="Your comment"></textarea>
-    <p id="c_error" class="text-red-500 text-sm"></p>
-    <button id="c_send" class="mt-2 self-start p-4 bg-red-500 text-white rounded">Submit</button>
-    <p id="c_status" class="text-sm"></p>
     `
     const close_modal = content.querySelector('.close-modal')
     close_modal.addEventListener('click',()=>{
         modal.classList.add('hidden')
-        modal.classList.remove('flex')
     })
     modal.classList.remove('hidden')
     modal.classList.add('flex')
-    const box = content.querySelector('#comments')
-    async function loadComments() {
-        const list = await getComments(movie.id)
-        if (list.length === 0) {
-            box.innerHTML = '<p class="text-gray-500">Aucun commentaire</p>'
-            return
-        }
-        box.innerHTML = list.map(c => `
-            <div class="bg-[#222] rounded p-2 mb-2">
-                <div class="flex justify-between text-xs text-gray-400">
-                    <span class="font-bold text-white">${c.author}</span>
-                    <span>${new Date(c.createdAt).toLocaleDateString()}</span>
-                </div>
-                <p class="mt-1">${c.text}</p>
-            </div>
-        `).join('')
-    }
-    loadComments()
-    content.querySelector('#c_send').addEventListener('click', async () => {
-        const author = content.querySelector('#c_author').value.trim()
-        const text   = content.querySelector('#c_text').value.trim()
-        const errorP = content.querySelector('#c_error')
-        const statusP = content.querySelector('#c_status')
-
-        errorP.textContent = ''
-        statusP.textContent = ''
-
-        if (!author) { errorP.textContent = 'Nom obligatoire'; return }
-        if (!text)   { errorP.textContent = 'Commentaire obligatoire'; return }
-
-        localStorage.setItem('pseudo', author)
-
-        try {
-            await createComment({
-                contentId: String(movie.id),
-                author: author,
-                text: text,
-                createdAt: new Date().toISOString()
-            })
-            content.querySelector('#c_text').value = ''
-            statusP.className = 'text-sm text-green-500'
-            statusP.textContent = 'Commentaire ajouté ✓'
-            loadComments()
-        } catch {
-            statusP.className = 'text-sm text-red-500'
-            statusP.textContent = "Erreur d'envoi"
-        }
-    })
  })
     modal.addEventListener('click',(e) =>{
         if(e.target === modal){

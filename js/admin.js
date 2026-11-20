@@ -91,7 +91,7 @@ function showForm(movie = null) {
         value="${isEdit ? movie.description : ''}">
     </div>
     <div class="flex gap-2 mt-4">
-    <button id="f_save" class="px-4 py-2 bg-red-500 rounded">Save</button>
+        <button id="f_save" class="px-4 py-2 bg-red-500 rounded">Save</button>
         <button id="f_cancel" class="px-4 py-2 bg-gray-700 rounded">Cancel</button>
     </div>
     `
