@@ -24,7 +24,7 @@
                 <p class="text-sm font-semibold text-gray-400">Content Management</p>
                 <h2 class="text-3xl font-bold mt-2 text-white">All Content</h2>
             </div>
-            <button class="p-4 bg-red-500">Add Content</button>
+            <button class="p-4 bg-red-500 text-white rounded-2xl">Add Content</button>
         </section>
         <section class="flex gap-4 p-4 m-4 border-white bg-[#18181B] rounded-2xl">
         <div class="flex w-2/3">
@@ -43,7 +43,7 @@
         <section id="list" class="w-full justify-center">
             <div class="w-full h-full">
                 <table class="w-full">
-                    <thead>
+                    <thead class="bg-[#18181B]">
                         <tr>
                             <td class="p-4 font-bold text-white">Title</td>
                             <td class="p-4 font-bold text-white">Type</td>
@@ -51,9 +51,14 @@
                             <td class="p-4 font-bold text-white">Actions</td>
                         </tr>
                     </thead>
-                    <tbody id="movies" class="">
+                    <tbody id="movies" class="bg-gray-900">
                     </tbody>
                 </table>
+            </div>
+        </section>
+        <section id="modal_admin">
+            <div id="modal-content" class="items-center fixed hidden inset-0 justify-center backdrop-blur-sm z-50">
+                <div id="content" class="relative w-[700px] max-w-[90%] min-h-[400px] bg-[#181818] text-white shadow-2xl rounded-lg p-6"></div>
             </div>
         </section>
     </main>
