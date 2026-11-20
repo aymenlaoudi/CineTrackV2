@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./src/output.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>CineTrack</title>
 </head>
 
@@ -13,6 +14,10 @@
         <header class="flex border-b border-gray-700">
             <div class="flex w-1/3">
                 <a href="./index.html"><img class="w-40" src="./img/logo.png" alt="logo"></a>
+            </div>
+            <div class="w-full flex items-center justify-center gap-6">
+                <p class="text-gray-400"><a href="index.html">HOME</a></p>
+                <p class="text-gray-400"><a href="admin.html">ADMIN</a></p>
             </div>
         </header>
         <div class="flex flex-col gap-4 md:flex-row gap-4">
@@ -32,9 +37,11 @@
             </div>
             </section>
             <section id="modal_parent">
-            <div id="modal-card" class="items-center fixed hidden inset-0 justify-center backdrop-blur-sm z-50">
-                <div id="content-modal" class="relative w-[700px] max-w-[90%] min-h-[400px] bg-[#181818] text-white shadow-2xl rounded-lg p-6"></div>
-            </div>
+                <div id="modal-card" class="fixed hidden inset-0 overflow-y-auto backdrop-blur-sm z-50 bg-black/50 flex justify-center">
+                    <div class="flex min-h-full items-center justify-center p-4">
+                        <div id="content-modal" class="relative w-[700px] max-w-full max-h-[85vh] overflow-y-auto bg-[#181818] text-white shadow-2xl rounded-lg p-6"></div>
+                    </div>
+                </div>
             </section>
             <section id="test" class="grid grid-cols-2 md:grid-cols-4 gap-4 mx-4 my-4">
             </section>
@@ -59,6 +66,7 @@
     </footer>
     <script type="module" src="./js/main.js"></script>
     <script type="module" src="./js/api.js"></script>
+    <script type="module" src="./js/admin.js"></script>
 </body>
 
 </html>
