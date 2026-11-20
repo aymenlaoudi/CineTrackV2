@@ -1,4 +1,4 @@
-import { fetchData } from "./api.js";
+import { fetchData, getComments, createComment } from "./api.js";
 import { showFavourite, isFav, togFavorite} from "./favourites.js";
 const data = await fetchData('https://raw.githubusercontent.com/ouchad97/cinetrack-api/main/cinetrack-data.json')
 console.log(data);
@@ -101,7 +101,7 @@ const cards = document.querySelector('#test')
 const modal = document.querySelector('#modal-card')
 const p = document.querySelector('modal_parent')
 const content = document.querySelector('#content-modal')
-cards.addEventListener('click', (e) => {
+cards.addEventListener('click', async (e) => {
     const card = e.target.closest('[id^="card_"]')
     if(!card) return
 
@@ -122,6 +122,11 @@ cards.addEventListener('click', (e) => {
     <span class="text-l font-semibold">Duration : ${duration}</span>
     <span class="text-l font-semibold">Description : ${movie.description}</span>
     <span class="text-l font-semibold">Genres : ${movie.genres}</span>
+    <p>Title :</p>
+    <input name="title" class="w-full bg-white"></input>
+    <p>Entre Your Comment :</p>
+    <textarea class="w-full bg-white"></textarea>
+    <div id="comments">Loading...</div>
     </div>
     </div>
     `
@@ -131,6 +136,9 @@ cards.addEventListener('click', (e) => {
     })
     modal.classList.remove('hidden')
     modal.classList.add('flex')
+    const list = await getComments(movie.id)
+    const box = content.querySelector('#comments')
+    box.textContent = list.length === 0 ? 'Aucun commentaire' : list.length + 'commentaire(s)'
  })
     modal.addEventListener('click',(e) =>{
         if(e.target === modal){
