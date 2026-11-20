@@ -1,4 +1,4 @@
-const API_URL = "https://raw.githubusercontent.com/ouchad97/cinetrack-api/main/cinetrack-data.json";
+const API_URL = "https://6afaf1a3730c1d152f32cf9e.mockapi.io/api/v1";
 
 export async function request(path, options = {}) {
     const res = await fetch(API_URL + path, {
@@ -17,7 +17,7 @@ export const createContent = (data) =>
 
 // recuperer tous les contenus
 export const getContent = () =>
-    request("");
+    request("/contents");
 
 
 // modifier un contenu

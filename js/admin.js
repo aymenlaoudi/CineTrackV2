@@ -31,6 +31,7 @@ function showForm(movie = null) {
     const isEdit = movie !== null
     content.innerHTML = `
     <h2 class="text-2xl font-bold mb-4">${isEdit ? 'Modify' : 'Add'} Content</h2>
+    <div class="flex flex-col gap-4">
     <input id="f_title" class="w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Title"
         value="${isEdit ? movie.title : ''}">
     <input id="f_image" class="w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Image URL"
@@ -39,7 +40,24 @@ function showForm(movie = null) {
         <option value="Movies">Movies</option>
         <option value="Series">Series</option>
     </select>
-    <div class="flex gap-2">
+    </div>
+    <div class = "grid grid-cols-2 gap-4 mb-4">
+    <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Year of show"
+        value="${isEdit ? movie.releaseYear : ''}">
+    <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Duration"
+        value="${isEdit ? movie.duration : ''}">
+    <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Genres"
+        value="${isEdit ? movie.genres : ''}">
+        <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="productionCountries"
+            value="${isEdit ? movie.productionCountries : ''}">
+    </div>
+    <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Directors"
+            value="${isEdit ? movie.directors : ''}">
+    <div class="flex flex-col gap-4 mt-4">
+    <input id="f_year" class = "w-full p-8 mb-3 bg-[#2b2b34] rounded" placeholder="Description"
+        value="${isEdit ? movie.description : ''}">
+    </div>
+    <div class="flex gap-2 mt-4">
         <button id="f_save" class="px-4 py-2 bg-red-500 rounded">Save</button>
         <button id="f_cancel" class="px-4 py-2 bg-gray-700 rounded">Cancel</button>
     </div>
