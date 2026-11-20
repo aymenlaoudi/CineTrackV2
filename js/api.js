@@ -30,7 +30,7 @@ export const createContent = (data) =>
 // createContent , getContent , updateContent , deleteContent
 
 // recuperer tous les contenus
-export const getContent = () =>
+export const getContents = () =>
     request("/contents");
 
 
@@ -47,5 +47,4 @@ export const deleteContent = (id) =>
     request(`/contents/${id}`, {
         method: "DELETE"
     })
-
 

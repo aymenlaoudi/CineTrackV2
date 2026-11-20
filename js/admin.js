@@ -1,4 +1,4 @@
-import { createContent , getContent , updateContent , deleteContent } from "./api.js";
+import { createContent , getContents , updateContent , deleteContent } from "./api.js";
 // import { renderAdminCards } from "./ui.js";
 // import {  } from "./favourites.js";
 
@@ -10,7 +10,7 @@ const liste = document.querySelector('#movies')
 let movies = []
 
 async function get() {
-    movies = await getContent()
+    movies = await getContents()
     console.log(movies)
     renderMovies()
 }
@@ -45,7 +45,7 @@ function showForm(movie = null) {
     <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Year of show"
         value="${isEdit ? movie.releaseYear : ''}">
     <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Duration"
-        value="${isEdit ? movie.duration : ''}">
+        value="${isEdit && movie.type == 'movie' ? movie.duration : isEdit && movie.type == 'series' ? movie.seasons.length : ''}">
     <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Genres"
         value="${isEdit ? movie.genres : ''}">
         <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="productionCountries"
@@ -136,19 +136,18 @@ function renderMovies(list = movies) {
         td_type.className = 'p-4 text-gray-300'
         td_type.append(p_type)
         // Rating
-        const td_rating = document.createElement('td')
-        const star = document.createElement('span')
-        star.textContent = ' ★'
-        star.className = 'text-yellow-300 font-bold'
-        td_rating.textContent = '4.8 '
-        td_rating.className = 'p-4 text-gray-300'
-        td_rating.append(star)
+        const td_year = document.createElement('td')
+        const year = document.createElement('span')
+        year.textContent = movie.releaseYear
+        year.className = 'font-bold'
+        td_year.className = 'p-4 text-gray-300 text-center'
+        td_year.append(year)
         // Actions
         const td_actions = document.createElement('td')
-        td_actions.className = 'p-4'
+        td_actions.className = 'p-4 text-center'
         const btn_modifty = document.createElement('button')
         btn_modifty.textContent = 'Modify'
-        btn_modifty.className = 'px-3 py-1 mr-2 bg-blue-500 text-white rounded'
+        btn_modifty.className = 'px-3 py-1 mr-2 bg-blue-500 text-white rounded text-center'
         btn_modifty.addEventListener('click',()=>{
             showForm(movie)
             openModal()
@@ -161,13 +160,12 @@ function renderMovies(list = movies) {
             openModal()
         })
         td_actions.append(btn_modifty,btn_delete)
-        tr.append(td_title,td_type,td_rating,td_actions)
+        tr.append(td_title,td_type,td_year,td_actions)
         liste.append(tr)
     });
 }
 
 const search = document.querySelector('#search_admin')
-const filter = document.querySelector('#filter_admin')
 
 function searchAdmin() {
     const shows = search.value.toLowerCase().trim()

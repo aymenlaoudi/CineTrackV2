@@ -123,9 +123,9 @@ cards.addEventListener('click', (e) => {
     <span class="text-l font-semibold">Description : ${movie.description}</span>
     <span class="text-l font-semibold">Genres : ${movie.genres}</span>
     <p>Title :</p>
-    <input name="title" class="w-full bg-white"></input>
+    <input name="title" class="w-full bg-white text-gray-500"></input>
     <p>Entre Your Comment :</p>
-    <textarea class="w-full bg-white"></textarea>
+    <textarea class="w-full bg-white text-gray-500"></textarea>
     </div>
     </div>
     `
