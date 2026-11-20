@@ -1,7 +1,10 @@
 const API_URL = "https://raw.githubusercontent.com/ouchad97/cinetrack-api/main/cinetrack-data.json";
 
 export async function request(path, options = {}) {
-    const res = await fetch(API_URL + path, options);
+    const res = await fetch(API_URL + path, {
+    headers: { "Content-Type": "application/json" },
+    ...options,
+});
     if (!res.ok) throw new Error(`Erreur ${res.status}`);
         return res.json();
 }
