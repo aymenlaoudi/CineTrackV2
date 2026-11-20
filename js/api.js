@@ -1,10 +1,7 @@
 const API_URL = "https://raw.githubusercontent.com/ouchad97/cinetrack-api/main/cinetrack-data.json";
 
 export async function request(path, options = {}) {
-    const res = await fetch(API_URL + path, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-});
+    const res = await fetch(API_URL + path, options);
     if (!res.ok) throw new Error(`Erreur ${res.status}`);
         return res.json();
 }
@@ -17,7 +14,7 @@ export const createContent = (data) =>
 
 // recuperer tous les contenus
 export const getContent = () =>
-    request("/contents");
+    request("");
 
 
 // modifier un contenu
