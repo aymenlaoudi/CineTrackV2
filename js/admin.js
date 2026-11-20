@@ -108,9 +108,9 @@ addBtn.addEventListener('click',()=>{
     openModal()
 })
 
-function renderMovies() {
+function renderMovies(list = movies) {
     liste.innerHTML =''
-    movies.forEach(movie => {
+    list.forEach(movie => {
         const tr = document.createElement('tr')
         tr.className = 'border-b border-gray-700'
 
@@ -174,8 +174,5 @@ function searchAdmin() {
     let searchShow = movies.filter(show => show.title.toLowerCase().startsWith(shows))
     renderMovies(searchShow)
 }
-renderMovies(searchShow)
-search.addEventListener('input',() => {
-    const s = searchAdmin()
-    console.log(s);
-})
+
+search.addEventListener('input',searchAdmin)

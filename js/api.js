@@ -1,5 +1,19 @@
 const API_URL = "https://6afaf1a3730c1d152f32cf9e.mockapi.io/api/v1";
 
+export async function fetchData(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error("Fichier introuvable");
+        }
+        const data = await response.json();
+        return data;
+    }
+    catch (error) {
+        console.error(error.message);
+    }
+}
+
 export async function request(path, options = {}) {
     const res = await fetch(API_URL + path, {
     headers: { "Content-Type": "application/json" },
