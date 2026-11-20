@@ -48,4 +48,16 @@ export const deleteContent = (id) =>
         method: "DELETE"
     })
 
+export async function getComments(contentId) {
+    try{
+        return await request(`/comments?contentId=${contentId}`)
+    } catch (error) {
+        return []
+    }
+}
 
+export const createComment = (data) =>
+    request("/comments",{
+        method: "POST",
+        body: JSON.stringify(data)
+    })
