@@ -1,20 +1,30 @@
 import { createContent , getContents , updateContent , deleteContent } from "./api.js";
-// import { renderAdminCards } from "./ui.js";
+import { showMessage } from "./ui.js";
+// import { renderAdminCards, showMessage } from "./ui.js";
 // import {  } from "./favourites.js";
+import { validateForm } from "./validation.js";
 
 const addBtn = document.querySelector('#addBtn')
 const modal = document.querySelector('#modal-content')
 const content = document.querySelector('#content')
 const liste = document.querySelector('#movies')
+const status = document.querySelector('#status')
+const search = document.querySelector('#search_admin')
+
 
 let movies = []
 
-async function get() {
-    movies = await getContents()
-    console.log(movies)
-    renderMovies()
+async function load() {
+    showMessage(status, "Chargement")
+    try{
+        movies = await getContents()
+        showMessage(status, "")
+        renderMovies(movies)
+    } catch (e){
+        showMessage(status,"Error : impossible de charger les données","error")
+    }
 }
-get()
+load()
 
 function openModal() {
     modal.classList.remove('hidden')
@@ -29,32 +39,55 @@ function closeModal() {
 
 function showForm(movie = null) {
     const isEdit = movie !== null
+    let amount = ''
+    if(isEdit && movie.type == 'movie') amount = movie.duration
+    if(isEdit && movie.type == 'series') amount = movie.seasons.length
     content.innerHTML = `
     <h2 class="text-2xl font-bold mb-4">${isEdit ? 'Modify' : 'Add'} Content</h2>
-    <div class="flex flex-col gap-4">
+
+    <div class="grid grid-cols-2 gap-4">
+    <div class="col-span-2">
     <input id="f_title" class="w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Title"
         value="${isEdit ? movie.title : ''}">
+    <p id="err_title" class="text-red-500 text-sm mb-2"></p>
+    </div>
+    <div class="col-span-2">
     <input id="f_image" class="w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Image URL"
         value="${isEdit ? movie.image : ''}">
-    <select id="f_type" class="w-full p-2 mb-4 bg-[#2b2b34] rounded">
-        <option value="${isEdit ? movie.type : 'Movies'}">Movies</option>
-        <option value="${isEdit ? movie.type : 'Series'}">Series</option>
-    </select>
+    <p id="err_image" class="text-red-500 text-sm mb-2"></p>
     </div>
-    <div class = "grid grid-cols-2 gap-4 mb-4">
+    <div>
+    <select id="f_type" class="w-full p-2 mb-4 bg-[#2b2b34] rounded">
+        <option value="">-- Type --</option>
+        <option value="movie">Movies</option>
+        <option value="series">Series</option>
+    </select>
+    <p id="err_type" class="text-red-500 text-sm mb-2"></p>
+    </div>
+    <div>
     <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Year of show"
         value="${isEdit ? movie.releaseYear : ''}">
-    <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Duration"
-        value="${isEdit && movie.type == 'movie' ? movie.duration : isEdit && movie.type == 'series' ? movie.seasons.length : ''}">
-    <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Genres"
-        value="${isEdit ? movie.genres : ''}">
-        <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="productionCountries"
-            value="${isEdit ? movie.productionCountries : ''}">
+    <p id="err_releaseYear" class="text-red-500 text-sm mb-2"></p>
     </div>
-    <input id="f_year" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Directors"
-            value="${isEdit ? movie.directors : ''}">
-    <div class="flex flex-col gap-4 mt-4">
-    <input id="f_year" class = "w-full p-8 mb-3 bg-[#2b2b34] rounded" placeholder="Description"
+    <div class="col-span-2">
+    <input id="f_amount" class="w-full p-2 bg-[#2b2b34] rounded" placeholder="Duration (film) ou nombre de saisons (série)"
+        value="${amount}">
+    <p id="err_amount" class="text-red-500 text-sm mb-2"></p>
+    </div>
+    <div>
+    <input id="f_genres" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Genres"
+        value="${isEdit ? movie.genres : ''}">
+    </div>
+    <div>
+    <input id="f_countries" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="productionCountries"
+        value="${isEdit ? movie.productionCountries : ''}">
+    </div>
+    <div>
+    <input id="f_directors" class = "w-full p-2 mb-3 bg-[#2b2b34] rounded" placeholder="Directors"
+        value="${isEdit ? movie.directors : ''}">
+    </div>
+    <div>
+    <input id="f_desc" class = "w-full p-8 mb-3 bg-[#2b2b34] rounded" placeholder="Description"
         value="${isEdit ? movie.description : ''}">
     </div>
     <div class="flex gap-2 mt-4">
@@ -65,50 +98,74 @@ function showForm(movie = null) {
 
     if(isEdit) document.querySelector('#f_type').value = movie.type
     document.querySelector('#f_cancel').addEventListener('click', closeModal)
-    document.querySelector('#f_save').addEventListener('click', () => {
-    const title = document.querySelector('#f_title').value.trim()
-    const image = document.querySelector('#f_image').value.trim()
+    document.querySelector('#f_save').addEventListener('click',() => save(movie))
+}
+async function save(movie) {
+    const amount = Number(document.querySelector('#f_amount').value)
     const type = document.querySelector('#f_type').value
-    if(!title) return alert('title should be exist')
 
-    if(isEdit){
-        movie.title = title
-        movie.image = image
-        movie.type = type
-    }else{
-        movies.push({ id: Date.now(), title, image, type})
+    const data = {
+        title: document.querySelector('#f_title').value.trim(),
+        image: document.querySelector('#f_image').value.trim(),
+        type: type,
+        releaseYear: Number(document.querySelector('#f_year').value),
+        amount: amount,
+        genres: document.querySelector('#f_genres').value.split(",").map(g => g.trim()),
+        productionCountries: document.querySelector('#f_countries').value.split(",").map(g => g.trim()),
+        directors: document.querySelector('#f_directors').value.split(",").map(g => g.trim()),
+        description: document.querySelector('#f_desc').value.trim()
     }
-    renderMovies()
-    closeModal()
 
-})
-}
+    // effacer les anciennes erreurs
+    document.querySelector('#err_title').textContent = ''
+    document.querySelector('#err_image').textContent = ''
+    document.querySelector('#err_type').textContent = ''
+    document.querySelector('#err_releaseYear').textContent = ''
+    document.querySelector('#err_amount').textContent = ''
 
-function showDelete(movie) {
-    content.innerHTML = `
-        <div class="grid grid-rows-3">
-        <h2 class="text-2xl font-bold mb-4">Delete</h2>
-        <p class="mb-6">Do you want to delete <b>${movie.title}</b> ?</p>
-        <div class="flex gap-2">
-            <button id="d_yes" class="px-4 py-2 bg-red-500 rounded">Yes, delete</button>
-            <button id="d_no" class="px-4 py-2 bg-gray-700 rounded">Cancel</button>
-        </div>
-        </div>
-    `
-    document.querySelector('#d_no').addEventListener('click', closeModal)
-    document.querySelector('#d_yes').addEventListener('click', () => {
-        movies = movies.filter(m => m.id !== movie.id)
-        renderMovies()
+    // valider
+    const errors = validateForm(data)
+    if (errors.title) document.querySelector('#err_title').textContent = errors.title
+    if (errors.image) document.querySelector('#err_image').textContent = errors.image
+    if (errors.type) document.querySelector('#err_type').textContent = errors.type
+    if (errors.releaseYear) document.querySelector('#err_releaseYear').textContent = errors.releaseYear
+    if (errors.amount) document.querySelector('#err_amount').textContent = errors.amount
+    if (Object.keys(errors).length > 0) return
+
+    // préparer l'objet à envoyer
+    delete data.amount
+    if (type == 'movie') {
+        data.duration = amount
+    } else {
+        data.seasons = []
+        for (let i = 1; i <= amount; i++) {
+            data.seasons.push({ number: i })
+        }
+    }
+
+    try {
+        if (movie) {
+            const updated = await updateContent(movie.id, { ...movie, ...data })
+            movies = movies.map(m => m.id == movie.id ? updated : m)
+        } else {
+            const created = await createContent(data)
+            movies.push(created)
+        }
+        renderMovies(movies)
         closeModal()
-    })
+        showMessage(status, "Enregistré avec succès", "success")
+    } catch (e) {
+        showMessage(status, "Erreur lors de l'enregistrement", "error")
+    }
 }
+
 
 addBtn.addEventListener('click',()=>{
     showForm()
     openModal()
 })
 
-function renderMovies(list = movies) {
+function renderMovies(list ) {
     liste.innerHTML =''
     list.forEach(movie => {
         const tr = document.createElement('tr')
@@ -155,17 +212,22 @@ function renderMovies(list = movies) {
         const btn_delete = document.createElement('button')
         btn_delete.textContent = 'Delete'
         btn_delete.className = 'px-3 py-1 bg-red-500 text-white rounded'
-        btn_delete.addEventListener('click',()=>{
-            showDelete(movie)
-            openModal()
+        btn_delete.addEventListener('click', async () => {
+            if (!confirm(`Supprimer « ${movie.title} » ?`)) return
+            try {
+                await deleteContent(movie.id)
+                movies = movies.filter(m => m.id !== movie.id)
+                renderMovies(movies)
+                showMessage(status, "Supprimé avec succès", "success")
+            } catch (e) {
+                showMessage(status, "Erreur lors de la suppression", "error")
+            }
         })
         td_actions.append(btn_modifty,btn_delete)
         tr.append(td_title,td_type,td_year,td_actions)
         liste.append(tr)
     });
 }
-
-const search = document.querySelector('#search_admin')
 
 function searchAdmin() {
     const shows = search.value.toLowerCase().trim()
